@@ -82,7 +82,14 @@ public interface FitPlannerAPI {
 ### 🏃‍♀️Workouts
 
 Поддържат се три типа тренировки: `CardioWorkout`, `StrengthWorkout` и `YogaSession`. Всички имат публичен конструктор със списък аргументи `(String name, int duration, int caloriesBurned, int difficulty)`.
-Изгорените калории трябва да са положително число, а трудността трябва да е в интервала [1, 5] (1 – лесна, 5 – “няма да си усещаш краката”). Ако някой аргумент е невалиден, хвърли `InvalidWorkoutException`, което е `RuntimeException`.
+
+**Валидация на аргументи:**
+- `name` не трябва да е `null` или празен/само whitespace
+- `duration` трябва да е положително число (> 0)
+- `caloriesBurned` трябва да е положително число (> 0)
+- `difficulty` трябва да е в интервала [1, 5] (1 – лесна, 5 – “няма да си усещаш краката”)
+
+При невалиден параметър се хвърля `InvalidWorkoutException`, което е `RuntimeException`.
 
 Всички видове тренировки имплементират интерфейса `Workout`:
 
@@ -168,7 +175,7 @@ public interface WorkoutFilter {
 
 1. `NameWorkoutFilter`
     - Аргументи: `keyword`, `caseSensitive`.
-    - Сравнява за частично или пълно съвпадение на името на тренировката.
+    - Сравнява за частично или пълно съвпадение на името на тренировката (substring matching).
     - Ако `keyword` е `null` или празен стринг – хвърли `IllegalArgumentException`.
 
 ```java
@@ -176,9 +183,9 @@ public NameWorkoutFilter(String keyword, boolean caseSensitive)
 ```
 
 2. `DurationWorkoutFilter`
-    - Аргументи: `min`, `max`.
+    - Аргументи: `min`, `max` - продължителност в минути.
     - Проверява дали `min` <= `duration` <= `max`.
-    - Ако `min` > `max`, хвърли `IllegalArgumentException`.
+    - Ако `min` > `max`, `min` < 0 или `max` < 0, хвърли `IllegalArgumentException`.
 
 ```java
 public DurationWorkoutFilter(int min, int max)
@@ -209,14 +216,14 @@ public TypeWorkoutFilter(WorkoutType type)
 
 ## Гранични случаи
 
-| Случай                       | Очакван резултат                                       |
-| ---------------------------- | ------------------------------------------------------ |
-| `availableWorkouts` е `null` | `IllegalArgumentException`                             |
-| `availableWorkouts` е празен | всички методи връщат празни колекции                   |
-| `totalMinutes < 0`           | `IllegalArgumentException`                             |
-| `totalMinutes == 0`          | празен списък                                          |
-| няма комбинация под лимита   | `OptimalPlanImpossibleException`                       |
-| има няколко оптимални плана  | върни произволен от тях (всички се считат за коректни) |
+| Метод / Конструктор                                 | Случай                       | Очакван резултат                                       |
+| --------------------------------------------------- | ---------------------------- | ------------------------------------------------------ |
+| `FitPlanner(Collection<Workout> availableWorkouts)` | `availableWorkouts` е `null` | `IllegalArgumentException`                             |
+| `FitPlanner(Collection<Workout> availableWorkouts)` | `availableWorkouts` е празен | всички останали методи връщат празни колекции                   |
+| `generateOptimalWeeklyPlan(int totalMinutes)`       | `totalMinutes < 0`           | `IllegalArgumentException`                             |
+| `generateOptimalWeeklyPlan(int totalMinutes)`       | `totalMinutes == 0`          | празен списък                                          |
+| `generateOptimalWeeklyPlan(int totalMinutes)`       | няма комбинация под лимита   | `OptimalPlanImpossibleException`                       |
+| `generateOptimalWeeklyPlan(int totalMinutes)`       | има няколко оптимални плана  | върни произволен от тях (всички се считат за коректни) |
 
 ## Пример
 
@@ -242,7 +249,9 @@ for (Workout w : plan) {
 // StrengthWorkout[name=Leg Day, duration=30, caloriesBurned=250, difficulty=2]
 ```
 
- > Забележка: Планът е сортиран по изгорени калории, след това по трудност — и двете в низходящ ред.
+
+> [!WARNING]
+> Планът е сортиран по изгорени калории, след това по трудност — и двете в низходящ ред.
 
 ### Пакети
 
@@ -271,7 +280,6 @@ src
     └── (...)
 ```
 
-### :warning: Забележки
-
-- Не променяйте по никакъв начин интерфейсите, дадени в условието.
-- Използването на [Java Stream API](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html) и/или [lambdas](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) **не е разрешено**. Задачата трябва да се реши с помощта на знанията от курса до момента.
+> [!WARNING]
+> - Не променяйте по никакъв начин интерфейсите, дадени в условието.
+> - Използването на [Java Stream API](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html) и/или [lambdas](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html) **не е разрешено**. Задачата трябва да се реши с помощта на знанията от курса до момента.
