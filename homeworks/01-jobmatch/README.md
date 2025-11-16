@@ -24,7 +24,7 @@
 В пакета `bg.sofia.uni.fmi.mjt.jobmatch` създайте клас `JobMatch` с публичен конструктор по подразбиране, който имплементира интерфейса `JobMatchAPI`:
 
 ```java
-package bg.sofia.uni.fmi.mjt.jobmatch;
+package bg.sofia.uni.fmi.mjt.jobmatch.api;
 
 import bg.sofia.uni.fmi.mjt.jobmatch.matching.SimilarityStrategy;
 import bg.sofia.uni.fmi.mjt.jobmatch.model.entity.Candidate;
@@ -203,7 +203,7 @@ public interface JobMatchAPI {
 
 ### Помощни типове
 
-Създайте следните типове в пакета `bg.sofia.uni.fmi.mjt.jobmatch.model`.
+Създайте следните типове (кой в кой пакет - справка в секцията "Пакети" по-долу).
 
 | Тип | Конструктор | Описание | Record |
 |-----|-------------|----------|--------|
@@ -223,6 +223,7 @@ public interface JobMatchAPI {
 - `String` параметри: не null, не blank
 - `Set` параметри: не null, не empty
 - Числа (години, заплата): неотрицателни
+- Умение: в интервала [0, 5]
 - `similarityScore`: в интервала [0, 1]
 - `improvementScore`: неотрицателен (>= 0)
 
@@ -233,7 +234,7 @@ public interface JobMatchAPI {
 Образователното ниво се моделира от enum `Education`:
 
 ```java
-package bg.sofia.uni.fmi.mjt.jobmatch.model;
+package bg.sofia.uni.fmi.mjt.jobmatch.model.entity;
 
 public enum Education {
     HIGH_SCHOOL(1),
